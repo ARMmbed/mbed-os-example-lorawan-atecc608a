@@ -147,10 +147,10 @@ int main(void)
 
     connect_params.connection_u.otaa.dev_eui = DEV_EUI;
     connect_params.connection_u.otaa.app_eui = APP_EUI;
-    connect_params.connection_u.otaa.app_key = NULL; // Will read from ATECC608 instead
+    connect_params.connection_u.otaa.app_key = (uint8_t*)MBED_CONF_LORA_APPLICATION_KEY; // Will read from ATECC608 instead
     connect_params.connection_u.otaa.nb_trials = 10;
 
-    retcode = lorawan.connect();
+    retcode = lorawan.connect(connect_params);
 
     if (retcode == LORAWAN_STATUS_OK ||
             retcode == LORAWAN_STATUS_CONNECT_IN_PROGRESS) {
