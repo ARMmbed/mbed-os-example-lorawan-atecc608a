@@ -29,8 +29,7 @@
 
 static ATCAIfaceCfg atecc608_i2c_config;
 
-// Keys, if DevEUI is written in a slot on the ATECC608A then that is used
-static uint8_t DEV_EUI[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+// Application EUI (only used in LoRaWAN 1.0.x)
 static uint8_t APP_EUI[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 
 // Max payload size can be LORAMAC_PHY_MAXPAYLOAD.
@@ -83,15 +82,19 @@ static LoRaWANInterface lorawan(radio);
  */
 static lorawan_app_callbacks_t callbacks;
 
+static void print_buffer(const char *message, uint8_t *buffer, size_t buffer_size) {
+    printf(message);
+    for (size_t ix = 0; ix < buffer_size; ix++) {
+        printf("%02x ", buffer[ix]);
+    }
+    printf("\r\n");
+}
+
 /**
  * Entry point for application
  */
 int main(void)
 {
-    if (APP_EUI[0] == 0x0 && APP_EUI[1] == 0x0 && APP_EUI[2] == 0x0 && APP_EUI[3] == 0x0 && APP_EUI[4] == 0x0 && APP_EUI[5] == 0x0 && APP_EUI[6] == 0x0 && APP_EUI[7] == 0x0) {
-        printf("Set your LoRaWAN application EUI first!\n");
-        return -1;
-    }
 
     // Setup secure element
     atecc608_i2c_config.iface_type = ATCA_I2C_IFACE;
@@ -103,6 +106,23 @@ int main(void)
     atecc608_i2c_config.wake_delay = 1500;
     //select_device(ATECC608A);
     atcab_init(&atecc608_i2c_config);
+
+    uint8_t serialnum[ATCA_SERIAL_NUM_SIZE];
+    ATCA_STATUS serialnum_status = atcab_read_serial_number(serialnum);
+    if (serialnum_status != ATCA_SUCCESS) {
+        printf(" Failed to read ATECC608A serial number (%d) \r\n", serialnum_status);
+        return 1;
+    }
+
+    printf("\r\n Mbed OS LoRaWAN example for ATECC608A-MAHTN-T \r\n");
+
+    print_buffer("\tDevice EUI:      ", serialnum, 8);
+    print_buffer("\tApplication EUI: ", APP_EUI, 8);
+
+    if (APP_EUI[0] == 0x0 && APP_EUI[1] == 0x0 && APP_EUI[2] == 0x0 && APP_EUI[3] == 0x0 && APP_EUI[4] == 0x0 && APP_EUI[5] == 0x0 && APP_EUI[6] == 0x0 && APP_EUI[7] == 0x0) {
+        printf(" Set your LoRaWAN application EUI first in main.cpp! \r\n");
+        return -1;
+    }
 
     // setup tracing
     setup_trace();
@@ -145,7 +165,7 @@ int main(void)
     lorawan_connect_t connect_params;
     connect_params.connect_type = LORAWAN_CONNECTION_OTAA;
 
-    connect_params.connection_u.otaa.dev_eui = DEV_EUI;
+    connect_params.connection_u.otaa.dev_eui = serialnum;
     connect_params.connection_u.otaa.app_eui = APP_EUI;
     connect_params.connection_u.otaa.app_key = (uint8_t*)MBED_CONF_LORA_APPLICATION_KEY; // Will read from ATECC608 instead
     connect_params.connection_u.otaa.nb_trials = 10;

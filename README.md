@@ -20,7 +20,7 @@ Connect the CryptoAuthentication UDFN Socket Kit to the `I2C_SDA` and `I2C_SCL` 
 
 On the SAML21 Xplained Pro development board, connect the LoRa radio to `EXT1`, and the CryptoAuthentication UDFN Socket Kit to `EXT3`.
 
-![SAML21 Xplained Pro with LoRa radio and secure element](media/secure01.png)
+![SAML21 Xplained Pro with LoRa radio and secure element](media/secure01.jpg)
 
 ## Getting started
 
@@ -46,9 +46,7 @@ This application can be built using [Mbed CLI](https://os.mbed.com/docs/mbed-os/
 
 ### Setting credentials
 
-You need to set your application EUI if you're using LoRaWAN 1.0.x. In addition, you might need to set your device EUI, if your ATECC608A-MAHTN-T does not have it's Device EUI present in Slot 10. If this is the case, the message `Cannot read device EUI in slot 10` will pop up.
-
-To set these EUIs, open `main.cpp`, and look for `LORAWAN_DEV_EUI` and `LORAWAN_APP_EUI`.
+You need to set your application EUI if you're using LoRaWAN 1.0.x. To set this EUIs, open `main.cpp`, and look for `APP_EUI`.
 
 ### Setting the channel plan
 
