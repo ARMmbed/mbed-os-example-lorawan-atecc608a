@@ -1,0 +1,7 @@
+.mbed
+BUILD/
+Cayenne-LPP/
+mbed-cryptoauthlib/
+mbed-lora-radio-drv/
+mbed-os/
+mbed_settings.*
